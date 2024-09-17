@@ -1,0 +1,53 @@
+@baseUrl = http://localhost:8080
+
+# @name register
+POST {{baseUrl}}/register
+content-type: application/json
+
+{
+    "username": "test2",
+    "password": "test"
+}
+
+###
+# @name login
+POST {{baseUrl}}/login
+content-type: application/json
+
+{
+    "username": "test2",
+    "password": "test"
+}
+
+@accessToken = {{login.response.body.access_token}}
+
+###
+# @name getBooks
+GET {{baseUrl}}/books
+content-type: application/json
+Authorization: Bearer {{accessToken}}
+
+###
+# @name createBook
+POST {{baseUrl}}/books
+content-type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "title": "Book 2",
+    "author": "Author 2"
+}
+
+
+###
+# @name refreshToken
+POST {{baseUrl}}/refresh
+content-type: application/json
+
+{
+    "refresh_token": ""
+}
+
+###
+POST {{baseUrl}}/logout
+content-type: application/json

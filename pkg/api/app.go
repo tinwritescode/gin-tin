@@ -25,10 +25,14 @@ func NewApp(cfg *config.Config) (*App, error) {
 		log.Fatal("failed to connect to the database:", err)
 	}
 
-	db.AutoMigrate(&model.Book{})
-	repo := repository.NewBookRepository(db)
-	svc := service.NewBookService(repo, db)
-	h := handler.NewHandler(svc)
+	db.AutoMigrate(&model.Book{}, &model.User{})
+
+	bookRepo := repository.NewBookRepository(db)
+	bookService := service.NewBookService(bookRepo)
+	authRepo := repository.NewAuthRepository(db)
+	authService := service.NewAuthService(authRepo)
+
+	h := handler.NewHandler(bookService, authService)
 
 	router := gin.New()
 	h.SetupRoutes(router)

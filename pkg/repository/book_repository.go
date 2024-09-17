@@ -10,7 +10,7 @@ import (
 
 type BookRepository interface {
 	GetAll() ([]model.Book, error)
-	Create(book model.Book) error
+	Create(book model.Book) (model.Book, error)
 	Delete(id string) error
 }
 
@@ -35,15 +35,17 @@ func (r *bookRepository) GetAll() ([]model.Book, error) {
 
 }
 
-func (r *bookRepository) Create(book model.Book) error {
+func (r *bookRepository) Create(book model.Book) (model.Book, error) {
 	result := r.db.Create(&book)
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "UNIQUE constraint failed") {
-			return errors.New("book already exists")
+			return model.Book{}, errors.New("book already exists")
 		}
-		return result.Error
+		return model.Book{}, result.Error
 	}
-	return nil
+	createdBook := *result.Statement.Dest.(*model.Book)
+
+	return createdBook, nil
 }
 
 func (r *bookRepository) Delete(id string) error {
