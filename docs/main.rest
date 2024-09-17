@@ -1,0 +1,22 @@
+GET http://localhost:8080/books
+content-type: application/json
+###
+
+GET http://localhost:8080
+content-type: application/json
+
+###
+
+POST http://localhost:8080/books
+content-type: application/json
+
+{
+    "id": "4",
+    "title": "The Hobbit",
+    "author": "J. R. R. Tolkien"
+}
+###
+
+DELETE http://localhost:8080/books/4
+content-type: application/json
+
