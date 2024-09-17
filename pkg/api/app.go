@@ -1,12 +1,16 @@
 package api
 
 import (
-	"github.com/tinwritescode/gin-tin/pkg/config"
-	"github.com/tinwritescode/gin-tin/pkg/handler"
-	"github.com/tinwritescode/gin-tin/pkg/repository"
-	"github.com/tinwritescode/gin-tin/pkg/service"
+	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tinwritescode/gin-tin/pkg/config"
+	"github.com/tinwritescode/gin-tin/pkg/handler"
+	"github.com/tinwritescode/gin-tin/pkg/model"
+	"github.com/tinwritescode/gin-tin/pkg/repository"
+	"github.com/tinwritescode/gin-tin/pkg/service"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type App struct {
@@ -15,8 +19,15 @@ type App struct {
 }
 
 func NewApp(cfg *config.Config) (*App, error) {
-	repo := repository.NewBookRepository()
-	svc := service.NewBookService(repo)
+
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal("failed to connect to the database:", err)
+	}
+
+	db.AutoMigrate(&model.Book{})
+	repo := repository.NewBookRepository(db)
+	svc := service.NewBookService(repo, db)
 	h := handler.NewHandler(svc)
 
 	router := gin.New()

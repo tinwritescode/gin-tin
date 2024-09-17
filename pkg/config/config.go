@@ -2,7 +2,7 @@ package config
 
 type Config struct {
 	ServerAddress string
-	// Add other configuration fields
+	// Add other configuration fields as needed
 }
 
 func Load() (*Config, error) {

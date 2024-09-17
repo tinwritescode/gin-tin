@@ -1,40 +1,55 @@
 package repository
 
-import "github.com/tinwritescode/gin-tin/pkg/model"
+import (
+	"errors"
+	"strings"
+
+	"github.com/tinwritescode/gin-tin/pkg/model"
+	"gorm.io/gorm"
+)
 
 type BookRepository interface {
-	GetAll() []model.Book
-	Create(book model.Book)
-	Delete(id string)
+	GetAll() ([]model.Book, error)
+	Create(book model.Book) error
+	Delete(id string) error
 }
 
 type bookRepository struct {
-	books []model.Book
+	db *gorm.DB
 }
 
-func NewBookRepository() BookRepository {
+func NewBookRepository(db *gorm.DB) BookRepository {
 	return &bookRepository{
-		books: []model.Book{
-			{ID: "1", Title: "Harry Potter", Author: "J. K. Rowling"},
-			{ID: "2", Title: "The Lord of the Rings", Author: "J. R. R. Tolkien"},
-			{ID: "3", Title: "The Wizard of Oz", Author: "L. Frank Baum"},
-		},
+		db: db,
 	}
 }
 
-func (r *bookRepository) GetAll() []model.Book {
-	return r.books
+func (r *bookRepository) GetAll() ([]model.Book, error) {
+	var books []model.Book
+
+	if result := r.db.Find(&books); result.Error != nil {
+		return nil, result.Error
+	}
+
+	return books, nil
+
 }
 
-func (r *bookRepository) Create(book model.Book) {
-	r.books = append(r.books, book)
-}
-
-func (r *bookRepository) Delete(id string) {
-	for i, book := range r.books {
-		if book.ID == id {
-			r.books = append(r.books[:i], r.books[i+1:]...)
-			break
+func (r *bookRepository) Create(book model.Book) error {
+	result := r.db.Create(&book)
+	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "UNIQUE constraint failed") {
+			return errors.New("book already exists")
 		}
+		return result.Error
 	}
+	return nil
+}
+
+func (r *bookRepository) Delete(id string) error {
+	if result := r.db.Delete(&model.Book{}, id); result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }

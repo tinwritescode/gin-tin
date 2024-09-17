@@ -30,7 +30,12 @@ func (h *Handler) getRoot(c *gin.Context) {
 }
 
 func (h *Handler) getBooks(c *gin.Context) {
-	books := h.bookService.GetAllBooks()
+	books, err := h.bookService.GetAllBooks()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, books)
 }
 
@@ -40,13 +45,22 @@ func (h *Handler) createBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	h.bookService.CreateBook(book)
+	err := h.bookService.CreateBook(book)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, book)
 }
 
 func (h *Handler) deleteBook(c *gin.Context) {
 	id := c.Param("id")
-	h.bookService.DeleteBook(id)
+	err := h.bookService.DeleteBook(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.Status(http.StatusNoContent)
 }
 

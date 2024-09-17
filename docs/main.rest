@@ -11,12 +11,12 @@ POST http://localhost:8080/books
 content-type: application/json
 
 {
-    "id": "4",
+    "id": "5",
     "title": "The Hobbit",
     "author": "J. R. R. Tolkien"
 }
 ###
 
-DELETE http://localhost:8080/books/4
+DELETE http://localhost:8080/books/5
 content-type: application/json
 
