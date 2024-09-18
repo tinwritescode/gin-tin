@@ -37,3 +37,14 @@ The application will run on `http://localhost:8080`.
 - `GET /books`: Get all books.
 - `POST /books`: Create a new book.
 - `DELETE /books/:id`: Delete a book by ID.
+
+
+### Swagger
+
+The API documentation is available at `http://localhost:8080/swagger/index.html`.
+
+Run the following command to generate the Swagger documentation:
+
+```bash
+swag init -g cmd/api/main.go --parseDependency --parseInternal
+```
