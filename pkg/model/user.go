@@ -8,6 +8,7 @@ type User struct {
 	gorm.Model
 	Username string `json:"username" gorm:"unique" validate:"required,min=3,max=32"`
 	Password string `json:"password" validate:"required,min=8,max=32"`
+	Role     string `json:"role" validate:"required"` // Add this line
 }
 
 type RegisterRequest struct {
@@ -41,14 +42,9 @@ type LogoutResponse struct {
 	Message string `json:"message"`
 }
 
-// Add this new struct for custom error messages
-type ValidationError struct {
-	Field   string `json:"field"`
-	Message string `json:"message"`
-}
-
-// Update the ErrorResponse struct
-type ErrorResponse struct {
-	Error   string            `json:"error" example:"Validation failed"`
-	Details []ValidationError `json:"details,omitempty"`
-}
+const (
+	RoleSuperAdmin = "super_admin"
+	RoleAdmin      = "admin"
+	RoleMod        = "mod"
+	RoleUser       = "user"
+)

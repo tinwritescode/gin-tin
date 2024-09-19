@@ -5,8 +5,8 @@ POST {{baseUrl}}/register
 content-type: application/json
 
 {
-    "username": "test2",
-    "password": "test"
+    "username": "test23",
+    "password": "testhahaha"
 }
 
 ###
@@ -15,8 +15,8 @@ POST {{baseUrl}}/login
 content-type: application/json
 
 {
-    "username": "test2",
-    "password": "test"
+    "username": "test23",
+    "password": "testhahaha"
 }
 
 @accessToken = {{login.response.body.access_token}}

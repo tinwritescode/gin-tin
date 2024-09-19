@@ -30,9 +30,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 	bookRepo := repository.NewBookRepository(db)
 	bookService := service.NewBookService(bookRepo)
 	authRepo := repository.NewAuthRepository(db)
-	authService := service.NewAuthService(authRepo)
+	authService := service.NewAuthService(authRepo, cfg)
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo)
 
-	h := handler.NewHandler(bookService, authService)
+	h := handler.NewHandler(bookService, authService, userService, cfg)
 
 	router := gin.New()
 	h.SetupRoutes(router)

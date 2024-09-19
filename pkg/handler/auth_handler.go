@@ -1,14 +1,13 @@
 package handler
 
 import (
-	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/tinwritescode/gin-tin/pkg/model"
+	"github.com/tinwritescode/gin-tin/pkg/utils"
 )
 
 // Register godoc
@@ -24,13 +23,13 @@ import (
 func (h *Handler) Register(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.HandleValidationErrors(c, err)
 		return
 	}
 
 	validate := validator.New()
 	if err := validate.Struct(user); err != nil {
-		handleValidationErrors(c, err)
+		utils.HandleValidationErrors(c, err)
 		return
 	}
 
@@ -61,7 +60,7 @@ func (h *Handler) Register(c *gin.Context) {
 func (h *Handler) Login(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.HandleValidationErrors(c, err)
 		return
 	}
 
@@ -120,38 +119,4 @@ func (h *Handler) Logout(c *gin.Context) {
 	// Clear the refresh token cookie
 	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
-}
-
-func handleValidationErrors(c *gin.Context, err error) {
-	var ve validator.ValidationErrors
-	if errors.As(err, &ve) {
-		out := make([]model.ValidationError, len(ve))
-		for i, fe := range ve {
-			out[i] = model.ValidationError{
-				Field:   strings.ToLower(fe.Field()),
-				Message: getErrorMsg(fe),
-			}
-		}
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Error:   "Validation failed",
-			Details: out,
-		})
-	} else {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Error: err.Error(),
-		})
-	}
-}
-
-func getErrorMsg(fe validator.FieldError) string {
-	switch fe.Tag() {
-	case "required":
-		return "This field is required"
-	case "min":
-		return fmt.Sprintf("Should be at least %s characters long", fe.Param())
-	case "max":
-		return fmt.Sprintf("Should be at most %s characters long", fe.Param())
-	default:
-		return "Invalid value"
-	}
 }

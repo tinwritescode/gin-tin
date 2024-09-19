@@ -13,6 +13,8 @@ type AuthRepository interface {
 	Login(username, password string) (string, error)
 	Register(user model.User) error
 	GetUserByUsername(username string) (model.User, error)
+	GetAllUsers() ([]model.User, error)
+	GetUserByID(id string) (model.User, error)
 }
 
 type authRepository struct {
@@ -59,6 +61,20 @@ func (r *authRepository) Register(user model.User) error {
 func (r *authRepository) GetUserByUsername(username string) (model.User, error) {
 	var user model.User
 	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
+	return user, nil
+}
+
+func (r *authRepository) GetAllUsers() ([]model.User, error) {
+	var users []model.User
+	result := r.db.Find(&users)
+	return users, result.Error
+}
+
+func (r *authRepository) GetUserByID(id string) (model.User, error) {
+	var user model.User
+	if err := r.db.Where("id = ?", id).First(&user).Error; err != nil {
 		return model.User{}, err
 	}
 	return user, nil
