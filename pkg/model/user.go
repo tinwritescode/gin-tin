@@ -8,7 +8,8 @@ type User struct {
 	gorm.Model
 	Username string `json:"username" gorm:"unique" validate:"required,min=3,max=32"`
 	Password string `json:"password" validate:"required,min=8,max=32"`
-	Role     string `json:"role" validate:"required"` // Add this line
+	Role     string `json:"role" validate:"required"`
+	Books    []Book `json:"books" gorm:"foreignKey:UserID"` // Add this line
 }
 
 type RegisterRequest struct {

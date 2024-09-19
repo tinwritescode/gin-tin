@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -50,9 +51,18 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
-		c.Set("user_id", claims["user_id"])
+		// uint64
+		userID, err := strconv.ParseUint(claims["user_id"].(string), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+				Error: "Invalid user ID",
+			})
+			c.Abort()
+			return
+		}
+		c.Set("user_id", uint(userID))
 		c.Set("user_role", claims["role"]) // Add this line to set the user's role
+
 		c.Next()
 	}
 }

@@ -1,0 +1,24 @@
+@baseUrl = http://localhost:8080
+
+###
+# @name login
+POST {{baseUrl}}/login
+content-type: application/json
+
+{
+    "username": "test23",
+    "password": "testhahaha"
+}
+
+@accessToken = {{login.response.body.access_token}}
+
+###
+# @name createBook
+POST {{baseUrl}}/books
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald"
+}

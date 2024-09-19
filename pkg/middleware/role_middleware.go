@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,16 +15,12 @@ func RoleMiddleware(roles ...string) gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println(userRole)
-
 		userRoleStr, ok := userRole.(string)
 		if !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user role format"})
 			c.Abort()
 			return
 		}
-
-		fmt.Println(userRoleStr)
 
 		for _, role := range roles {
 			if userRoleStr == role {
